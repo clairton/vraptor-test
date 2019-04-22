@@ -165,7 +165,7 @@
 			</activation>
 			<properties>
 				<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-				<weld.version>2.1.0.Final</weld.version>
+				<weld.version>2.4.8.Final</weld.version>
 			</properties>
 			<dependencies>
 				<dependency>

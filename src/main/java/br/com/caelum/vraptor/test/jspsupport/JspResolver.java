@@ -20,7 +20,7 @@ import org.apache.jasper.JasperException;
 import org.apache.jasper.JspC;
 import org.apache.jasper.runtime.HttpJspBase;
 import org.apache.tomcat.InstanceManager;
-import org.jboss.weld.environment.servlet.util.Reflections;
+import org.jboss.weld.el.WeldELContextListener;
 import org.springframework.mock.web.MockServletConfig;
 import org.springframework.mock.web.MockServletContext;
 
@@ -83,7 +83,7 @@ public class JspResolver {
 		// Register the ELResolver with JSP
 		jspApplicationContext.addELResolver(manager.getELResolver());
 
-		ELContextListener listener = Reflections.<ELContextListener> newInstance("org.jboss.weld.el.WeldELContextListener");
+		ELContextListener listener = new WeldELContextListener();
 		// Register ELContextListener with JSP
 		jspApplicationContext.addELContextListener(listener );
 
