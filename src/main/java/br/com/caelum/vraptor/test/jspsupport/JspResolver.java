@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 import javax.el.ELContextListener;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -20,21 +21,20 @@ import org.apache.jasper.JspC;
 import org.apache.jasper.runtime.HttpJspBase;
 import org.apache.tomcat.InstanceManager;
 import org.jboss.weld.environment.servlet.util.Reflections;
-import org.jboss.weld.manager.BeanManagerImpl;
 import org.springframework.mock.web.MockServletConfig;
 import org.springframework.mock.web.MockServletContext;
 
 public class JspResolver {
 
 	private String webContentPath;
-	private BeanManagerImpl manager;
+	private BeanManager manager;
 	private static final String EXPRESSION_FACTORY_NAME = "org.jboss.weld.el.ExpressionFactory";
 
 	@Deprecated
 	public JspResolver() {
 	}
 
-	public JspResolver(String webContentPath, BeanManagerImpl manager) {
+	public JspResolver(String webContentPath, BeanManager manager) {
 		this.webContentPath = webContentPath;
 		this.manager = manager;
 	}
@@ -83,9 +83,9 @@ public class JspResolver {
 		// Register the ELResolver with JSP
 		jspApplicationContext.addELResolver(manager.getELResolver());
 
+		ELContextListener listener = Reflections.<ELContextListener> newInstance("org.jboss.weld.el.WeldELContextListener");
 		// Register ELContextListener with JSP
-		jspApplicationContext.addELContextListener(Reflections
-				.<ELContextListener> newInstance("org.jboss.weld.el.WeldELContextListener"));
+		jspApplicationContext.addELContextListener(listener );
 
 		// Push the wrapped expression factory into the servlet context so that
 		// Tomcat or Jetty can hook it in using a container code
