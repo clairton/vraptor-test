@@ -24,7 +24,7 @@ import org.springframework.mock.web.MockServletConfig;
 import org.springframework.mock.web.MockServletContext;
 
 public class JspResolver {
-
+	private static Class<?> klazz;
 	private String webContentPath;
 	private BeanManager manager;
 	private static final String EXPRESSION_FACTORY_NAME = "org.jboss.weld.el.ExpressionFactory";
@@ -76,15 +76,15 @@ public class JspResolver {
 		MockServletConfig servletConfig = new MockServletConfig(new MockServletContext());
 		servletConfig.getServletContext().setAttribute(InstanceManager.class.getName(),
 				new InstanceManagerImplementation());
-		JspApplicationContext jspApplicationContext = JspFactory.getDefaultFactory().getJspApplicationContext(
-				servletConfig.getServletContext());
+		JspApplicationContext jspApplicationContext = JspFactory.getDefaultFactory()
+				.getJspApplicationContext(servletConfig.getServletContext());
 
 		// Register the ELResolver with JSP
 		jspApplicationContext.addELResolver(manager.getELResolver());
 
 		ELContextListener listener = getELContextListener();
 		// Register ELContextListener with JSP
-		jspApplicationContext.addELContextListener(listener );
+		jspApplicationContext.addELContextListener(listener);
 
 		// Push the wrapped expression factory into the servlet context so that
 		// Tomcat or Jetty can hook it in using a container code
@@ -113,9 +113,9 @@ public class JspResolver {
 		String method = split[split.length - 1];
 		String className = null;
 		if (forwardedUrl.endsWith("jspf")) {
-			className = method.substring(0, method.length() - 5)+"_jspf";
+			className = method.substring(0, method.length() - 5) + "_jspf";
 		} else {
-			className = method.substring(0, method.length() - 4)+"_jsp";
+			className = method.substring(0, method.length() - 4) + "_jsp";
 		}
 		String controller = split[split.length - 2];
 		return "org.apache.jsp.WEB_002dINF.jsp." + controller + "." + className;
@@ -143,7 +143,8 @@ public class JspResolver {
 		}
 
 		@Override
-		public Object newInstance(Class<?> clazz) throws IllegalAccessException, InvocationTargetException, NamingException, InstantiationException {
+		public Object newInstance(Class<?> clazz)
+				throws IllegalAccessException, InvocationTargetException, NamingException, InstantiationException {
 			return null;
 		}
 	}
@@ -151,12 +152,11 @@ public class JspResolver {
 	private void writeToResponse(String body, HttpServletResponse response) {
 		try {
 			response.getWriter().println(body);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	
 	private <T extends ELContextListener> T getELContextListener() {
 		final Class<T> klazz = getELContextListenerClass();
 		try {
@@ -164,21 +164,21 @@ public class JspResolver {
 			@SuppressWarnings("unchecked")
 			final T t = (T) object;
 			return t;
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (final InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	
 	private <T extends ELContextListener> Class<T> getELContextListenerClass() {
-		Class<?> klazz;
-		try {
-			klazz = Class.forName("org.jboss.weld.module.web.el.WeldELContextListener");
-		}catch (ClassNotFoundException e) {
+		if (klazz == null) {
 			try {
 				klazz = Class.forName("org.jboss.weld.el.WeldELContextListener");
-			}catch (ClassNotFoundException e2) {
-				throw new RuntimeException(e);
+			} catch (final ClassNotFoundException e) {
+				try {
+					klazz = Class.forName("org.jboss.weld.module.web.el.WeldELContextListener");
+				} catch (final ClassNotFoundException e2) {
+					throw new RuntimeException(e);
+				}
 			}
 		}
 		@SuppressWarnings("unchecked")
