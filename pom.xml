@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>br.com.caelum.vraptor</groupId>
@@ -6,11 +8,11 @@
 	<version>4.1.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
-    </parent>
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
 
 	<scm>
 		<url>http://github.com/caelum/vraptor-test</url>
@@ -74,9 +76,9 @@
 			<version>5.1.5.RELEASE</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-web</artifactId>
-		    <version>5.1.5.RELEASE</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>5.1.5.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -177,6 +179,30 @@
 				<dependency>
 					<groupId>org.jboss.weld.se</groupId>
 					<artifactId>weld-se-core</artifactId>
+					<version>${weld.version}</version>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>cdi-2</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+				<weld.version>3.1.0.Final</weld.version>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>org.jboss.weld.se</groupId>
+					<artifactId>weld-se-shaded</artifactId>
+					<version>${weld.version}</version>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.jboss.weld.servlet</groupId>
+					<artifactId>weld-servlet-core</artifactId>
 					<version>${weld.version}</version>
 					<scope>provided</scope>
 				</dependency>

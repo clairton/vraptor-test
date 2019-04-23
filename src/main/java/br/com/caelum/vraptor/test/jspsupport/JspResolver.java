@@ -20,7 +20,6 @@ import org.apache.jasper.JasperException;
 import org.apache.jasper.JspC;
 import org.apache.jasper.runtime.HttpJspBase;
 import org.apache.tomcat.InstanceManager;
-import org.jboss.weld.el.WeldELContextListener;
 import org.springframework.mock.web.MockServletConfig;
 import org.springframework.mock.web.MockServletContext;
 
@@ -83,7 +82,7 @@ public class JspResolver {
 		// Register the ELResolver with JSP
 		jspApplicationContext.addELResolver(manager.getELResolver());
 
-		ELContextListener listener = new WeldELContextListener();
+		ELContextListener listener = getELContextListener();
 		// Register ELContextListener with JSP
 		jspApplicationContext.addELContextListener(listener );
 
@@ -157,4 +156,33 @@ public class JspResolver {
 		}
 	}
 
+	
+	private <T extends ELContextListener> T getELContextListener() {
+		final Class<T> klazz = getELContextListenerClass();
+		try {
+			final Object object = klazz.newInstance();
+			@SuppressWarnings("unchecked")
+			final T t = (T) object;
+			return t;
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	
+	private <T extends ELContextListener> Class<T> getELContextListenerClass() {
+		Class<?> klazz;
+		try {
+			klazz = Class.forName("org.jboss.weld.module.web.el.WeldELContextListener");
+		}catch (ClassNotFoundException e) {
+			try {
+				klazz = Class.forName("org.jboss.weld.el.WeldELContextListener");
+			}catch (ClassNotFoundException e2) {
+				throw new RuntimeException(e);
+			}
+		}
+		@SuppressWarnings("unchecked")
+		final Class<T> eLContextListener = (Class<T>) klazz;
+		return eLContextListener;
+	}
 }
